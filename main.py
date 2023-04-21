@@ -69,22 +69,6 @@ async def sendtempmsg(ctx):
     await ctx.send(content="@everyone")
 
 
-# @client.command()
-# async def embed(ctx):
-#     embed=discord.Embed(title="Sample Embed", description="This is an embed that will show how to build an embed and the different components", color=0xFF5733)
-#     await ctx.send(embed=embed)
-
-# @client.command()
-# async def info(ctx, *, member: discord.Member):
-#     """Tells you some info about the member."""
-#     msg = f'{member} joined on {member.joined_at} and has {len(member.roles)} roles.'
-#     await ctx.send(msg)
-
-# @info.error
-# async def info_error(ctx, error):
-#     if isinstance(error, commands.BadArgument):
-#         await ctx.send('I could not find that member...')
-
 #run webserver
 awake()
 
