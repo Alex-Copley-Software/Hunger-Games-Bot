@@ -2,36 +2,68 @@
 import discord
 from discord.ext import commands
 from awake import awake
-import random
 import os
 
 # Create a new bot instance with the command prefix '-' and enable all intents
-client = commands.Bot(command_prefix="-", intents=discord.Intents.all())
-client.remove_command('help')
+bot = commands.Bot(command_prefix="-", intents=discord.Intents.all())
+bot.remove_command('help')
 
 
 # Define an event that will be called when the bot is ready to start processing events
-@client.event
+@bot.event
 async def on_ready():
     print(
         "200: Bot has connected."
     )  # Print a message to the console indicating that the bot has connected
 
 
-# Defines a command called "ping" that responds with "Pong!"
-@client.command()
-async def ping(ctx):
-    await ctx.send("Pong!")
+@bot.command()
+async def create(ctx):
+    channel_name = (f'Hunger Game host: {ctx.author}')
+    guild = ctx.guild
+    existing_channel = discord.utils.get(guild.channels, name=channel_name)
+    category = discord.utils.get(guild.categories, name='DEVELOPMENT')
+    print(category)
+    if not existing_channel:
+        new_channel = await category.create_text_channel(channel_name)
+        user = ctx.author  # Get the user who sent the command
+        await ctx.send(
+            f'The {channel_name} channel has been created in {category.name} category by {user.mention}'
+        )
+    else:
+        await ctx.send('That channel already exists')
+
+
+@bot.command(name="profile")
+async def profile(ctx):
+    user = ctx.message.author
+    inline = True
+    embed = discord.Embed(title=user.name + "#" + user.discriminator,
+                          color=discord.Color.green())
+    userData = {
+        "Mention": user.mention,
+        "Nick": user.nick,
+        "Created at": user.created_at.strftime("%b %d, %Y, %T"),
+        "Joined at": user.joined_at.strftime("%b %d, %Y, %T"),
+        "Server": user.guild,
+        "Top role": user.top_role,
+    }
+    for [fieldName, fieldVal] in userData.items():
+        embed.add_field(name=fieldName + ":", value=fieldVal, inline=inline)
+    embed.set_footer(text=f'id: {user.id}')
+    userAvatar = user.display_avatar
+    embed.set_thumbnail(url=userAvatar.url)
+    await ctx.send(embed=embed)
 
 
 # Defines a command called "begin" that sends a message indicating that the game is being initiated
-@client.command()
+@bot.command()
 async def begin(ctx):
     await ctx.send("Initiating Game...")
 
 
 # Defines a command called "help" that sends an embedded message listing all the available bot commands
-@client.command()
+@bot.command()
 async def help(ctx):
     # Creates an embedded message with a title, description, and color
     embed = discord.Embed(
@@ -48,20 +80,23 @@ async def help(ctx):
     embed.add_field(name='-help',
                     value='List all of the commands',
                     inline=True)
+    embed.add_field(name='-profile',
+                    value='Displays the users profile',
+                    inline=True)
     # Sends the embedded message to the channel where the command was executed
     await ctx.send(embed=embed)
 
 
 # Defines a command called "sendtempmsg" that sends a temporary message to a specific channel
-@client.command()
+@bot.command()
 async def sendtempmsg(ctx):
     # Fetches the channel where the message will be sent
-    suggestions_ch = await client.fetch_channel('1099035128107380776')
+    suggestions_ch = await bot.fetch_channel('1099035128107380776')
     # Creates an embedded message with a title, description, and color
     embed = discord.Embed(
         title='Welcome To The Hunger Games Bot!',
         description=
-        (f'Thank you for taking your time to test and support the up and coming best hunger games bot on the market. Please note this has just recently began development. The team responsible for this bot are very motivated and strive for success. If you have any suggestions please let us know by sending them in the {suggestions_ch} channel!'
+        (f'Thank you for taking your time to test and support the up and coming best hunger games bot on the market. Please           note this has just recently began development. The team responsible for this bot are very motivated and strive for success. If            you have any suggestions please let us know by sending them in the {suggestions_ch} channel!'
          ),
         color=discord.Color.green())
     # Sets the thumbnail image of the embedded message
@@ -85,4 +120,4 @@ async def sendtempmsg(ctx):
 awake()
 
 # Start the bot with the provided bot token.
-client.run(os.environ['BOT_TOKEN'])
+bot.run(os.environ['BOT_TOKEN'])
