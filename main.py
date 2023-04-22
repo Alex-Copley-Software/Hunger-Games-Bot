@@ -1,6 +1,7 @@
 # Import the necessary modules
 import discord
 from discord.ext import commands
+from discord import Member
 from awake import awake
 import os
 
@@ -35,8 +36,11 @@ async def create(ctx):
 
 
 @bot.command(name="profile")
-async def profile(ctx):
-    user = ctx.message.author
+async def profile(ctx, user: Member = None):
+
+    if user == None:
+        user = ctx.message.author
+
     inline = True
     embed = discord.Embed(title=user.name + "#" + user.discriminator,
                           color=discord.Color.green())

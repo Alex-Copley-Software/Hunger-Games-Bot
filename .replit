@@ -109,3 +109,7 @@ ignoredPackages = ["unit_tests"]
 
 [deployment]
 run = ["sh", "-c", "python main.py"]
+
+[auth]
+pageEnabled = false
+buttonEnabled = false
