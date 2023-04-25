@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from discord import Member
+import asyncio
 from replit import db
-import time
 
 
 class HungerGames(commands.Cog):
@@ -16,7 +16,6 @@ class HungerGames(commands.Cog):
 
     @commands.command()
     async def create(self, ctx):
-        host = ctx.author.id
 
         if len(db["channel_num"]) > 0:
             # Grabs the next available channel
@@ -50,7 +49,6 @@ class HungerGames(commands.Cog):
                 await channel_mention.send((
                     f"{ctx.message.author.mention} Welcome to your Hunger Games Channel! Please await for futher instructions!"
                 ))
-              
 
                 await ctx.send(
                     f'The <#{channel_id}> channel has been created by {user.mention}. Have fun!',
@@ -58,11 +56,14 @@ class HungerGames(commands.Cog):
 
                 # Remove current channel number from database to ensure no more than 5 channels at a time
                 db["channel_num"].pop(0)
+                await asyncio.sleep(3600)  # import asyncio
+                await channel.delete()
+
 
             else:
-                await ctx.send('That channel already exists')
+                await ctx.send('That channel already exists', delete_after = 15)
         else:
-            await ctx.send("No Open Game Channels Left... Please Wait.")
+            await ctx.send("No Open Game Channels Left... Please Wait.", delete_after = 15)
 
     #Temporary Deletion Command
     @commands.command(name="deletechannel")
